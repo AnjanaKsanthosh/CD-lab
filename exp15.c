@@ -1,44 +1,48 @@
 #include<stdio.h>
 #include<string.h>
-#include<ctype.h>
-#define LEN 5
+#define LEN 10
 #define SIZE 50
-struct
-{
+
+struct {
     char res[LEN];
     char op;
     char opnd1[LEN];
     char opnd2[LEN];
-} tac[SIZE]; 
-int num_instr=0;
-char instr[SIZE];
-void read_three_address_code()
-{
-    printf("Enter the number of instructions\n");
-    scanf("%d",&num_instr);
-    printf("Enter each instruction, seperate result opcodes and operands by space\n");
-    printf("E.g. s = a + b\n");
-    for(int i=0;i<num_instr;i++)
-    {
-        scanf("%s = %s %c %s",&tac[i].res,&tac[i].opnd1,&tac[i].op,&tac[i].opnd2);
+} tac[SIZE];  // To store three-address code
+
+int num_instr = 0;
+
+void read_three_address_code() {
+    printf("Enter the number of instructions:\n");
+    scanf("%d", &num_instr);
+    printf("Enter each instruction (e.g. a = b + c):\n");
+
+    for (int i = 0; i < num_instr; i++) {
+        scanf("%s = %s %c %s", tac[i].res, tac[i].opnd1, &tac[i].op, tac[i].opnd2);
     }
 }
-char *get_instr(char op)
-{   
-    char mnemonics[][LEN]={"MUL","ADD","","SUB","","DIV"};
-    strcpy(instr,mnemonics[op-'*']);
-    return instr;
-} 
-void generate_target_code()
-{
-    for(int i=0;i<num_instr;i++)
-    {
-        printf("MOV AX,%s\n%s AX,%s\nMOV %s,AX\n",tac[i].opnd1,get_instr(tac[i].op),tac[i].opnd2,tac[i].res);
+
+const char* get_instr(char op) {
+    switch (op) {
+        case '+': return "ADD";
+        case '-': return "SUB";
+        case '*': return "MUL";
+        case '/': return "DIV";
+        default:  return "UNKNOWN";
     }
 }
-int main()
-{
+
+void generate_target_code() {
+    for (int i = 0; i < num_instr; i++) {
+        printf("MOV AX,%s\n", tac[i].opnd1);
+        printf("%s AX,%s\n", get_instr(tac[i].op), tac[i].opnd2);
+        printf("MOV %s,AX\n", tac[i].res);
+    }
+}
+
+int main() {
     read_three_address_code();
-    printf("Equivalent Assembly code is:\n");
+    printf("\nEquivalent Assembly Code:\n");
     generate_target_code();
+    return 0;
 }
